@@ -20,11 +20,3 @@ WORKDIR /app
 
 # Comando di default quando il container viene avviato
 CMD ["whisper"]
-
-#https://github.com/openai/whisper
-#https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-#docker build -t openai-whisper .
-#docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper M13.mp3 --device cuda --model large-v3 --language Italian --output_dir /app --output_format txt
-#docker run --gpus all -it openai-whisper nvidia-smi
-
-
