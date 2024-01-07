@@ -1,0 +1,8 @@
+# Ignore contents of models and audio-files folders
+/models/*
+/audio-files/*
+
+# Keep models and audio-files folders in Git (even if empty)
+!/models/.gitkeep
+!/audio-files/.gitkeep
+
