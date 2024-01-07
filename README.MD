@@ -26,6 +26,11 @@ docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-
 
 This command utilizes GPU acceleration (--gpus all), mounts the local directories for Whisper models and audio files, and specifies the input audio file, output directory, language, and other relevant parameters.
 
+If you do not have a GPU or want to run without GPU acceleration, you can omit the --gpus all flag from the command. For example:
+```bash
+docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --model large-v3 --language Italian --output_dir /app --output_format txt
+```
+
 ### Additional Commands
 You can also check the GPU information using the following command:
 
