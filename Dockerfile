@@ -1,5 +1,5 @@
 # Usa l'immagine di base di Ubuntu
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # Aggiorna il sistema e installa le dipendenze necessarie
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
