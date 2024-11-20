@@ -21,14 +21,14 @@ docker build -t openai-whisper .
 To run OpenAI Whisper with the Docker image, you can use the following example command:
 
 ```bash
-docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --device cuda --model large-v3 --language Italian --output_dir /app --output_format txt
+docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --device cuda --model turbo --language Italian --output_dir /app --output_format txt
 ```
 
 This command utilizes GPU acceleration (--gpus all), mounts the local directories for Whisper models and audio files, and specifies the input audio file, output directory, language, and other relevant parameters.
 
 If you do not have a GPU or want to run without GPU acceleration, you can omit the --gpus all flag from the command. For example:
 ```bash
-docker run -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --model large-v3 --language Italian --output_dir /app --output_format txt
+docker run -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --model turbo --language Italian --output_dir /app --output_format txt
 ```
 
 ### Additional Commands
