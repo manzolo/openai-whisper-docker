@@ -17,7 +17,7 @@ To build the Docker image, use the following command:
 docker build -t openai-whisper .
 ```
 
-## Running OpenAI Whisper
+## Running OpenAI Whisper (GPU)
 To run OpenAI Whisper with the Docker image, you can use the following example command:
 
 ```bash
@@ -25,6 +25,18 @@ docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-
 ```
 
 This command utilizes GPU acceleration (--gpus all), mounts the local directories for Whisper models and audio files, and specifies the input audio file, output directory, language, and other relevant parameters.
+
+### Choosing the Right Model  
+
+Whisper supports multiple models with varying resource requirements and performance levels.  
+
+- **`large-v3`**:  
+  The most accurate model, but it requires substantial VRAM (10–15 GB). Recommended for powerful GPUs with sufficient memory.  
+
+- **`turbo`**:  
+  A more memory-efficient alternative to `large-v3`, offering near-comparable accuracy. This is suitable for GPUs with limited VRAM (e.g., 8 GB VRAM).  
+
+## Running OpenAI Whisper (CPU)
 
 If you do not have a GPU or want to run without GPU acceleration, you can omit the --gpus all flag from the command. For example:
 ```bash
