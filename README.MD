@@ -4,6 +4,8 @@
   <img src=".github/blue-button.png" alt="Buy Me A Coffee" width="200">
 </a>
 
+> **Disclaimer:** This is an unofficial, community-maintained Docker wrapper around [OpenAI Whisper](https://github.com/openai/whisper). It is not affiliated with or endorsed by OpenAI. This project is maintained as a personal hobby — use it as-is, no support is guaranteed.
+
 This Docker image provides a convenient environment for running [OpenAI Whisper](https://github.com/openai/whisper), a powerful automatic speech recognition (ASR) system. Based on Ubuntu 24.04 with Python 3.12 and all necessary dependencies included.
 
 ## Prerequisites
