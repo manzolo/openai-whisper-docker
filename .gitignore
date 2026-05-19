@@ -6,3 +6,5 @@
 !/models/.gitkeep
 !/audio-files/.gitkeep
 
+/.idea/vcs.xml
+/.idea/indexLayout.xml
