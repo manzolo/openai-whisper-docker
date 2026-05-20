@@ -70,9 +70,9 @@ if (-not $imageExists) {
   }
 }
 
-$files = Get-ChildItem -LiteralPath $inputDir -File |
+$files = @(Get-ChildItem -LiteralPath $inputDir -File |
   Where-Object { $supportedExtensions -contains $_.Extension.ToLowerInvariant() } |
-  Sort-Object Name
+  Sort-Object Name)
 
 if ($files.Count -eq 0) {
   Write-Host "No supported audio/video files found in: $inputDir"
@@ -117,9 +117,11 @@ foreach ($inputFile in $files) {
   }
 
   $elapsed = (Get-Date) - $fileStartedAt
-  Write-Host ("Finished {0} in {1}" -f $baseName, (Format-Hms -TotalSeconds [int]$elapsed.TotalSeconds))
+  $elapsedSeconds = [int][Math]::Round($elapsed.TotalSeconds)
+  Write-Host ("Finished {0} in {1}" -f $baseName, (Format-Hms -TotalSeconds $elapsedSeconds))
   $processed++
 }
 
 $totalElapsed = (Get-Date) - $startedAt
-Write-Host ("Done. Processed: {0}, skipped: {1}, total time: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds [int]$totalElapsed.TotalSeconds))
+$totalElapsedSeconds = [int][Math]::Round($totalElapsed.TotalSeconds)
+Write-Host ("Done. Processed: {0}, skipped: {1}, total time: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds $totalElapsedSeconds))
