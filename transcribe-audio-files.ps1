@@ -28,9 +28,9 @@ $supportedExtensions = @(
 function Format-Hms {
   param([int]$TotalSeconds)
 
-  $hours = [Math]::Floor($TotalSeconds / 3600)
-  $minutes = [Math]::Floor(($TotalSeconds % 3600) / 60)
-  $seconds = $TotalSeconds % 60
+  $hours = [int][Math]::Floor($TotalSeconds / 3600)
+  $minutes = [int][Math]::Floor(($TotalSeconds % 3600) / 60)
+  $seconds = [int]($TotalSeconds % 60)
   return ("{0:D2}:{1:D2}:{2:D2}" -f $hours, $minutes, $seconds)
 }
 
