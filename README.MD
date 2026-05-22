@@ -28,6 +28,7 @@ Defaults:
 - language: `Russian`
 - model: `small`
 - output: `.txt` files next to the source file in `audio-files/`
+- parallel jobs: value of `default_max_parallel` / `$defaultMaxParallel` in the script
 
 To override the defaults:
 
@@ -35,7 +36,13 @@ To override the defaults:
 MODEL=small LANGUAGE=Russian ./transcribe-audio-files.sh
 ```
 
-The script skips files that already have a matching `.txt` transcript next to them.
+To run multiple files at once without editing the script:
+
+```bash
+MODEL=turbo LANGUAGE=Russian MAX_PARALLEL=2 ./transcribe-audio-files.sh
+```
+
+The script skips files that already have a matching `.txt` transcript next to them. It also creates temporary `.whisper-lock` directories while a file is being processed to avoid duplicate work across concurrent runs.
 
 ### Windows 11 batch script
 
@@ -49,6 +56,7 @@ Defaults:
 - language: `Russian`
 - model: `small`
 - output: `.txt` files next to the source file in `audio-files/`
+- parallel jobs: value of `default_max_parallel` / `$defaultMaxParallel` in the script
 
 This matches the macOS script.
 
@@ -58,4 +66,10 @@ To override the defaults:
 $env:MODEL="small"; $env:LANGUAGE="Russian"; .\transcribe-audio-files.ps1
 ```
 
-The script skips files that already have a matching `.txt` transcript next to them.
+To run multiple files at once without editing the script:
+
+```powershell
+$env:MODEL="turbo"; $env:LANGUAGE="Russian"; $env:MAX_PARALLEL="2"; .\transcribe-audio-files.ps1
+```
+
+The script skips files that already have a matching `.txt` transcript next to them. It also creates temporary `.whisper-lock` directories while a file is being processed to avoid duplicate work across concurrent runs.
