@@ -11,7 +11,6 @@ This Docker image provides a convenient environment for running [OpenAI Whisper]
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/)
-- [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) (for GPU mode only)
 
 ## Quick Start
 
@@ -19,65 +18,60 @@ This Docker image provides a convenient environment for running [OpenAI Whisper]
 2. Run the transcription (see examples below)
 3. Find the output in the same `audio-files/` directory
 
-## Usage
+### macOS batch script
 
-### Docker Compose (Recommended)
+Use the helper script to scan `audio-files/` automatically:
 
-**Build:**
 ```bash
-docker compose --profile gpu build
+./transcribe-audio-files.sh
 ```
 
-**GPU mode:**
+Defaults:
+- language: `Russian`
+- model: `small`
+- output: `.txt` files next to the source file in `audio-files/`
+- parallel jobs: value of `default_max_parallel` / `$defaultMaxParallel` in the script
+
+To override the defaults:
+
 ```bash
-docker compose run --rm whisper-gpu whisper audio-file.mp3 --device cuda --model turbo --language Italian --output_dir /app --output_format txt
+MODEL=small LANGUAGE=Russian ./transcribe-audio-files.sh
 ```
 
-**CPU mode:**
+To run multiple files at once without editing the script:
+
 ```bash
-docker compose run --rm whisper-cpu whisper audio-file.mp3 --model turbo --language Italian --output_dir /app --output_format txt
+MODEL=turbo LANGUAGE=Russian MAX_PARALLEL=2 ./transcribe-audio-files.sh
 ```
 
-### Docker Direct
+The script skips files that already have a matching `.txt` transcript next to them. It also creates temporary `.whisper-lock` directories while a file is being processed to avoid duplicate work across concurrent runs.
 
-**Build:**
-```bash
-docker build -t openai-whisper .
+### Windows 11 batch script
+
+Use the PowerShell helper to scan `audio-files/` automatically:
+
+```powershell
+.\transcribe-audio-files.ps1
 ```
 
-**GPU mode:**
-```bash
-docker run --gpus all -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --device cuda --model turbo --language Italian --output_dir /app --output_format txt
+Defaults:
+- language: `Russian`
+- model: `small`
+- output: `.txt` files next to the source file in `audio-files/`
+- parallel jobs: value of `default_max_parallel` / `$defaultMaxParallel` in the script
+
+This matches the macOS script.
+
+To override the defaults:
+
+```powershell
+$env:MODEL="small"; $env:LANGUAGE="Russian"; .\transcribe-audio-files.ps1
 ```
 
-**CPU mode:**
-```bash
-docker run -it -v ${PWD}/models:/root/.cache/whisper -v ${PWD}/audio-files:/app openai-whisper whisper audio-file.mp3 --model turbo --language Italian --output_dir /app --output_format txt
+To run multiple files at once without editing the script:
+
+```powershell
+$env:MODEL="turbo"; $env:LANGUAGE="Russian"; $env:MAX_PARALLEL="2"; .\transcribe-audio-files.ps1
 ```
 
-## Volume Mounts
-
-| Local Path | Container Path | Description |
-|------------|----------------|-------------|
-| `./models` | `/root/.cache/whisper` | Cached Whisper models (persisted between runs) |
-| `./audio-files` | `/app` | Input audio files and output transcriptions |
-
-## Models
-
-| Model | VRAM Required | Description |
-|-------|---------------|-------------|
-| `large-v3` | 10-15 GB | Most accurate, recommended for powerful GPUs |
-| `turbo` | ~8 GB | Memory-efficient, near-comparable accuracy |
-
-## Useful Commands
-
-Check GPU information:
-```bash
-docker run --gpus all -it openai-whisper nvidia-smi
-```
-
-## References
-
-- [OpenAI Whisper GitHub Repository](https://github.com/openai/whisper)
-- [NVIDIA Container Toolkit Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
-- [Docker Official Website](https://docs.docker.com/get-docker/)
+The script skips files that already have a matching `.txt` transcript next to them. It also creates temporary `.whisper-lock` directories while a file is being processed to avoid duplicate work across concurrent runs.
