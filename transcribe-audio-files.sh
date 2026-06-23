@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+script_started_epoch="$(date +%s)"
+script_started_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 input_dir="${INPUT_DIR:-"$script_dir/audio-files"}"
 model_cache_dir="${MODEL_CACHE_DIR:-"$script_dir/models"}"
@@ -56,6 +58,7 @@ else
 fi
 echo "Output format: $output_format"
 echo "Max parallel jobs: $max_parallel"
+echo "Script started at: $script_started_at"
 
 if ! docker image inspect "$image_name" >/dev/null 2>&1; then
   echo "Building Docker image: $image_name"
@@ -79,12 +82,17 @@ done < <(
 
 if [[ ${#files[@]} -eq 0 ]]; then
   echo "No supported audio/video files found in: $input_dir"
+  script_finished_epoch="$(date +%s)"
+  script_finished_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
+  total_elapsed=$((script_finished_epoch - script_started_epoch))
+  total_duration="$(printf '%02d:%02d:%02d' "$((total_elapsed / 3600))" "$(((total_elapsed % 3600) / 60))" "$((total_elapsed % 60))")"
+  echo "Script finished at: $script_finished_at"
+  echo "Done. Processed: 0, skipped: 0, total runtime: $total_duration"
   exit 0
 fi
 
 processed=0
 skipped=0
-started_at="${SECONDS}"
 failed=0
 pending_base_names=()
 pending_lock_dirs=()
@@ -183,9 +191,12 @@ cleanup() {
 trap cleanup EXIT
 
 if [[ ${#pending_base_names[@]} -eq 0 ]]; then
-  total_elapsed=$((SECONDS - started_at))
+  script_finished_epoch="$(date +%s)"
+  script_finished_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
+  total_elapsed=$((script_finished_epoch - script_started_epoch))
   total_duration="$(human_duration "$total_elapsed")"
-  echo "Done. Processed: $processed, skipped: $skipped, total time: $total_duration"
+  echo "Script finished at: $script_finished_at"
+  echo "Done. Processed: $processed, skipped: $skipped, total runtime: $total_duration"
   exit 0
 fi
 
@@ -211,7 +222,8 @@ start_job() {
 
   cleanup_paths+=( "$lock_dir" )
   result_file="$(mktemp)"
-  echo "[$display_index/${#files[@]}] Starting $base_name (duration $duration_label)"
+  file_started_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
+  echo "[$display_index/${#files[@]}] Starting $base_name at $file_started_at (duration $duration_label)"
 
   (
     file_started_at="${SECONDS}"
@@ -301,9 +313,12 @@ while [[ $queue_index -lt ${#pending_base_names[@]} || ${#active_pids[@]} -gt 0 
   fi
 done
 
-total_elapsed=$((SECONDS - started_at))
+script_finished_epoch="$(date +%s)"
+script_finished_at="$(date '+%Y-%m-%d %H:%M:%S %z')"
+total_elapsed=$((script_finished_epoch - script_started_epoch))
 total_duration="$(human_duration "$total_elapsed")"
-echo "Done. Processed: $processed, skipped: $skipped, total time: $total_duration"
+echo "Script finished at: $script_finished_at"
+echo "Done. Processed: $processed, skipped: $skipped, total runtime: $total_duration"
 
 if [[ $failed -gt 0 ]]; then
   exit 1

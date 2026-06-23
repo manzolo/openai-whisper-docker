@@ -1,5 +1,7 @@
 $ErrorActionPreference = "Stop"
 
+$scriptStartedAt = Get-Date
+
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $inputDir = Join-Path $scriptDir "audio-files"
 $modelCacheDir = Join-Path $scriptDir "models"
@@ -34,6 +36,12 @@ function Format-Hms {
   $minutes = [int][Math]::Floor(($TotalSeconds % 3600) / 60)
   $seconds = [int]($TotalSeconds % 60)
   return ("{0:D2}:{1:D2}:{2:D2}" -f $hours, $minutes, $seconds)
+}
+
+function Format-Timestamp {
+  param([datetime]$DateTime)
+
+  return $DateTime.ToString("yyyy-MM-dd HH:mm:ss zzz")
 }
 
 function Get-MediaDurationLabel {
@@ -105,6 +113,7 @@ Write-Host "Whisper model: $model"
 Write-Host "Language: $language"
 Write-Host "Output format: $outputFormat"
 Write-Host "Max parallel jobs: $maxParallel"
+Write-Host ("Script started at: {0}" -f (Format-Timestamp -DateTime $scriptStartedAt))
 
 $imageExists = $true
 try {
@@ -129,12 +138,16 @@ $files = @(Get-ChildItem -LiteralPath $inputDir -File |
 
 if ($files.Count -eq 0) {
   Write-Host "No supported audio/video files found in: $inputDir"
+  $scriptFinishedAt = Get-Date
+  $totalElapsed = $scriptFinishedAt - $scriptStartedAt
+  $totalElapsedSeconds = [int][Math]::Round($totalElapsed.TotalSeconds)
+  Write-Host ("Script finished at: {0}" -f (Format-Timestamp -DateTime $scriptFinishedAt))
+  Write-Host ("Done. Processed: {0}, skipped: {1}, total runtime: {2}" -f 0, 0, (Format-Hms -TotalSeconds $totalElapsedSeconds))
   exit 0
 }
 
 $processed = 0
 $skipped = 0
-$startedAt = Get-Date
 $failed = @()
 $queue = [System.Collections.Queue]::new()
 $activeJobs = @()
@@ -161,9 +174,11 @@ for ($i = 0; $i -lt $files.Count; $i++) {
 }
 
 if ($queue.Count -eq 0) {
-  $totalElapsed = (Get-Date) - $startedAt
+  $scriptFinishedAt = Get-Date
+  $totalElapsed = $scriptFinishedAt - $scriptStartedAt
   $totalElapsedSeconds = [int][Math]::Round($totalElapsed.TotalSeconds)
-  Write-Host ("Done. Processed: {0}, skipped: {1}, total time: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds $totalElapsedSeconds))
+  Write-Host ("Script finished at: {0}" -f (Format-Timestamp -DateTime $scriptFinishedAt))
+  Write-Host ("Done. Processed: {0}, skipped: {1}, total runtime: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds $totalElapsedSeconds))
   exit 0
 }
 
@@ -244,7 +259,8 @@ while ($queue.Count -gt 0 -or $activeJobs.Count -gt 0) {
       continue
     }
 
-    Write-Host ("[{0}/{1}] Starting {2} (duration {3})" -f $item.Index, $files.Count, $item.BaseName, $item.DurationLabel)
+    $fileStartedAt = Get-Date
+    Write-Host ("[{0}/{1}] Starting {2} at {3} (duration {4})" -f $item.Index, $files.Count, $item.BaseName, (Format-Timestamp -DateTime $fileStartedAt), $item.DurationLabel)
 
     $job = Start-Job -ScriptBlock $jobScript -ArgumentList @(
       $imageName,
@@ -282,9 +298,11 @@ while ($queue.Count -gt 0 -or $activeJobs.Count -gt 0) {
   $failed += $result
 }
 
-$totalElapsed = (Get-Date) - $startedAt
+$scriptFinishedAt = Get-Date
+$totalElapsed = $scriptFinishedAt - $scriptStartedAt
 $totalElapsedSeconds = [int][Math]::Round($totalElapsed.TotalSeconds)
-Write-Host ("Done. Processed: {0}, skipped: {1}, total time: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds $totalElapsedSeconds))
+Write-Host ("Script finished at: {0}" -f (Format-Timestamp -DateTime $scriptFinishedAt))
+Write-Host ("Done. Processed: {0}, skipped: {1}, total runtime: {2}" -f $processed, $skipped, (Format-Hms -TotalSeconds $totalElapsedSeconds))
 
 if ($failed.Count -gt 0) {
   $failedNames = ($failed | ForEach-Object { $_.BaseName }) -join ", "
