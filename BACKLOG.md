@@ -7,6 +7,7 @@ Dalla review del progetto del 2026-07-05. Fatti (in attesa di commit/push): LICE
 ### Priorità media
 - [ ] Variante immagine CPU-only: installare torch da `https://download.pytorch.org/whl/cpu` per il profilo CPU → immagine da ~9 GB a ~2 GB (tag dedicato, es. `:cpu`)
 - [ ] Test end-to-end in CI: trascrizione reale con modello `tiny` (~75 MB) su un audio breve generato con ffmpeg, per far valere davvero la build mensile come canarino
+- [ ] Smoke test dell'immagine pubblicata: step (o job) post-publish che fa `docker pull ghcr.io/manzolo/openai-whisper-docker:latest` e verifica `whisper --help`, così da validare esattamente ciò che gli utenti scaricano (manifest, label, push andato a buon fine) e non solo la build locale
 - [ ] Output come non-root: `user: "${UID}:${GID}"` nel compose (spostando la cache modelli fuori da `/root/.cache/whisper`) — oggi le trascrizioni in `audio-files/` appartengono a root sull'host
 
 ### Priorità bassa
