@@ -15,7 +15,10 @@ services:
       - ./audio-files:/app
 
   whisper-cpu:
-    build: .
+    build:
+      context: .
+      args:
+        TORCH_VARIANT: cpu
     profiles:
       - cpu
     volumes:

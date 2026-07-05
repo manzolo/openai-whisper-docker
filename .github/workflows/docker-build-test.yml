@@ -22,6 +22,9 @@ jobs:
       - name: Build Docker image
         run: docker build -t openai-whisper .
 
+      - name: Build CPU-only Docker image
+        run: docker build --build-arg TORCH_VARIANT=cpu -t openai-whisper:cpu .
+
       - name: Verify whisper is installed
         run: docker run --rm openai-whisper whisper --help
 
@@ -33,6 +36,25 @@ jobs:
 
       - name: Build with Docker Compose (CPU profile)
         run: docker compose --profile cpu build
+
+      - name: Generate test audio
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends espeak-ng
+          mkdir -p e2e
+          espeak-ng "the quick brown fox jumps over the lazy dog" -w e2e/test.wav
+
+      - name: End-to-end transcription test (default image, tiny model)
+        run: |
+          docker run --rm -v "$PWD/e2e:/app" openai-whisper \
+            whisper test.wav --model tiny --language English --output_dir /app --output_format txt
+          test -s e2e/test.txt && cat e2e/test.txt
+          rm e2e/test.txt
+
+      - name: End-to-end transcription test (CPU-only image, tiny model)
+        run: |
+          docker run --rm -v "$PWD/e2e:/app" openai-whisper:cpu \
+            whisper test.wav --model tiny --language English --output_dir /app --output_format txt
+          test -s e2e/test.txt && cat e2e/test.txt
 
       - name: Log in to GitHub Container Registry
         if: github.event_name != 'pull_request'
@@ -46,7 +68,12 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           IMAGE=ghcr.io/${{ github.repository }}
+          DATE=$(date +%Y%m%d)
           docker tag openai-whisper "$IMAGE:latest"
-          docker tag openai-whisper "$IMAGE:$(date +%Y%m%d)"
+          docker tag openai-whisper "$IMAGE:$DATE"
+          docker tag openai-whisper:cpu "$IMAGE:cpu"
+          docker tag openai-whisper:cpu "$IMAGE:cpu-$DATE"
           docker push "$IMAGE:latest"
-          docker push "$IMAGE:$(date +%Y%m%d)"
+          docker push "$IMAGE:$DATE"
+          docker push "$IMAGE:cpu"
+          docker push "$IMAGE:cpu-$DATE"

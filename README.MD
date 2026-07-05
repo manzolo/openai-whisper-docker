@@ -31,7 +31,13 @@ A prebuilt image is published to GitHub Container Registry on every push to `mai
 docker pull ghcr.io/manzolo/openai-whisper-docker:latest
 ```
 
-Date-stamped tags (e.g. `:20260705`) are also available if you want to pin a specific build.
+If you only run on CPU, pull the much smaller CPU-only variant (~3.5 GB instead of ~13 GB, PyTorch without CUDA):
+
+```bash
+docker pull ghcr.io/manzolo/openai-whisper-docker:cpu
+```
+
+Date-stamped tags (e.g. `:20260705`, `:cpu-20260705`) are also available if you want to pin a specific build.
 
 ### Docker Compose (Recommended)
 
