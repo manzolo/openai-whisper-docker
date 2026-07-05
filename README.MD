@@ -21,6 +21,16 @@ This Docker image provides a convenient environment for running [OpenAI Whisper]
 
 ## Usage
 
+### Prebuilt Image
+
+A prebuilt image is published to GitHub Container Registry on every push to `main` and rebuilt monthly:
+
+```bash
+docker pull ghcr.io/manzolo/openai-whisper-docker:latest
+```
+
+Date-stamped tags (e.g. `:20260705`) are also available if you want to pin a specific build.
+
 ### Docker Compose (Recommended)
 
 **Build:**
@@ -75,6 +85,10 @@ Check GPU information:
 ```bash
 docker run --gpus all -it openai-whisper nvidia-smi
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). The image bundles third-party software under its own licenses: [OpenAI Whisper](https://github.com/openai/whisper) (MIT), PyTorch (BSD-3), ffmpeg (from Ubuntu packages, LGPL/GPL), and Ubuntu.
 
 ## References
 
