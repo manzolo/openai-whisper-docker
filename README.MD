@@ -19,6 +19,8 @@ This Docker image provides a convenient environment for running [OpenAI Whisper]
 2. Run the transcription (see examples below)
 3. Find the output in the same `audio-files/` directory
 
+> **Note:** the first run takes a while: Whisper downloads the selected model (~1.6 GB for `turbo`, ~3 GB for `large-v3`) into the `models/` directory before transcribing. Subsequent runs reuse the cached model and start right away.
+
 ## Usage
 
 ### Prebuilt Image
