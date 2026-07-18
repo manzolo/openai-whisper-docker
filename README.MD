@@ -103,3 +103,11 @@ This project is licensed under the [MIT License](LICENSE). The image bundles thi
 - [OpenAI Whisper GitHub Repository](https://github.com/openai/whisper)
 - [NVIDIA Container Toolkit Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 - [Docker Official Website](https://docs.docker.com/get-docker/)
+
+---
+
+## 🧠 Local AI Lab
+
+This project is part of **[manzolo's Local AI Lab](https://github.com/manzolo/local-ai-lab)** — a family of self-hosted AI projects (LLM, voice, vision & documents) that share the same conventions and can be wired together through the shared `local-ai-net` Docker network.
+
+Explore the whole family: [`topic:local-ai`](https://github.com/search?q=user%3Amanzolo+topic%3Alocal-ai&type=repositories)
